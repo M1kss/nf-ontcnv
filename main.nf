@@ -39,7 +39,7 @@ process sort {
     script:
         result_bed = 'counts_by_splits.bed'
         """
-        sort-bed ${unsorted_collect} > ${result_bed}
+        sort -k 1,1 -k2,2n ${unsorted_collect} > ${result_bed}
         """
 }
 
@@ -47,5 +47,5 @@ workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
     .map(it -> it.trim()).take(10)
     split_region(input) | mpileup
-    sort(mpileup.out.collectFile(name: 'counts_by_splits.tsv', newLine: true))
+    sort(mpileup.out.collectFile(name: 'counts_by_splits.tsv'))
 }
