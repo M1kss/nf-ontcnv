@@ -15,6 +15,9 @@ process split_region {
 }
 
 process mpileup {
+
+    tag region
+
     input:
         tuple val(region), path(bedfile)
     output:
@@ -39,7 +42,7 @@ process sort {
     script:
         result_bed = 'counts_by_splits.bed'
         """
-        sort-bed ${unsorted_collect} > ${result.bed}
+        sort-bed ${unsorted_collect} > ${result_bed}
         """
 }
 
