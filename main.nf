@@ -15,9 +15,6 @@ process split_region {
 }
 
 process mpileup {
-
-    tag region
-
     input:
         tuple val(region), path(bedfile)
     output:
