@@ -10,7 +10,7 @@ process split_region {
         bedfile = region.replaceAll('\t', '_') + '.atomic.bed'
         """
         echo "${region}" > temp.bed
-        bedops split temp.bed > "${bedfile}"
+        bedops --chop 100 temp.bed > "${bedfile}"
         """
 }
 
