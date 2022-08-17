@@ -44,7 +44,7 @@ process sort {
 }
 
 workflow {
-    input = Chanel.fromPath(params.nanosv_regions)
+    input = Channel.fromPath(params.nanosv_regions)
     split_region(input) | mpileup
     merge(mpileup.out.collectFile(name: 'counts_by_splits.tsv', newLine: true))
 }
