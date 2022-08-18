@@ -2,6 +2,8 @@
 nextflow.enable.dsl = 2
 
 process split_region {
+    tag region
+
     input:
         val region
     output:
@@ -10,11 +12,13 @@ process split_region {
         bedfile = region.replaceAll('\t', '_') + '.atomic.bed'
         """
         echo "${region}" > temp.bed
-        bedops --chop 100 temp.bed > "${bedfile}"
+        bedops --chop "${params.slice_size}" temp.bed > "${bedfile}"
         """
 }
 
 process mpileup {
+    tag region
+
     input:
         tuple val(region), path(bedfile)
     output:
@@ -31,7 +35,7 @@ process mpileup {
 }
 
 process sort {
-    publishDir "output", mode: 'symlink'
+    publishDir params.outdir, mode: 'symlink'
     input:
         path(unsorted_collect)
     output:
