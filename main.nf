@@ -2,7 +2,7 @@
 nextflow.enable.dsl = 2
 
 process split_region {
-    tag region
+    tag "${region}"
 
     input:
         val region
@@ -17,7 +17,7 @@ process split_region {
 }
 
 process mpileup {
-    tag region
+    tag "${region}"
 
     input:
         tuple val(region), path(bedfile)
