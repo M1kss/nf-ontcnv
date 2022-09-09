@@ -13,7 +13,7 @@ process split_region {
         region_bed = region.replaceAll('_', '\t')
         """
         echo "${region_bed}" > temp.bed
-        bedops --chop "${params.slice_size}" temp.bed > "${bedfile}"
+        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" > "${bedfile}"
         """
 }
 
@@ -30,9 +30,7 @@ process mpileup {
         """
         python3 ${projectDir}/count_tags.py "${params.bam_file}" < "${bedfile}" > tags_counts.txt
 
-        echo ${region_bed} > region.txt
-        tr '\n' ',' < tags_counts.txt > tags_joined.txt
-        paste region.txt tags_joined.txt > ${count_list} 
+        paste "${bedfile}" tags_counts.txt > ${count_list} 
         """
 }
 
@@ -52,6 +50,8 @@ process sort {
 workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
     .map(it -> it.trim().replaceAll('\t', '_'))
-    split_region(input) | mpileup
-    sort(mpileup.out.collectFile(name: 'counts_by_splits.tsv'))
+    regions = split_region(input)
+    num_regions = regions.count()
+    mp = regions.take(num_regions - 1) | mpileup
+    sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
