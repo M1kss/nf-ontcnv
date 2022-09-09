@@ -14,7 +14,7 @@ process split_region {
         region_bed = region.replaceAll('_', '\t')
         """
         echo "${region_bed}" > temp.bed
-        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" | head -n -1 | split -l 500  
+        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" | head -n -1 | split -l 500 - ${bedfile}
         """
 }
 
