@@ -8,6 +8,7 @@ process split_region {
         val region
     output:
         tuple val(region), path(bedfile)
+
     script:
         bedfile = region + '.atomic.bed'
         region_bed = region.replaceAll('_', '\t')
@@ -24,6 +25,7 @@ process mpileup {
         tuple val(region), path(bedfile)
     output:
         path count_list
+
     script:
         count_list = region + '.counts.bed'
         region_bed = region.replaceAll('_', '\t')
@@ -40,6 +42,7 @@ process sort {
         path(unsorted_collect)
     output:
         path result_bed
+
     script:
         result_bed = 'counts_by_splits.bed'
         """
@@ -52,6 +55,7 @@ workflow {
         .map(it -> it.trim().replaceAll('\t', '_'))
     regions = split_region(input)
     num_regions = regions.count()
-    mp = regions.take( num_regions - 1 ) | mpileup
+    num_regions.view()
+    mp = regions | take(num_regions) | mpileup
     sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
