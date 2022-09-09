@@ -7,7 +7,7 @@ process split_region {
     input:
         val region
     output:
-        tuple val(region), path("${bedfile}*")
+        path "${bedfile}*"
 
     script:
         bedfile = region + '.atomic.bed.'
