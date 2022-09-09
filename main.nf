@@ -19,16 +19,14 @@ process split_region {
 }
 
 process mpileup {
-    tag "${region}"
 
     input:
-        tuple val(region), path(bedfile)
+        path bedfile
     output:
         path count_list
 
     script:
-        count_list = region + '.counts.bed'
-        region_bed = region.replaceAll('_', '\t')
+        count_list = bedfile.simpleName + '.counts.bed'
         """
         python3 ${projectDir}/count_tags.py "${params.bam_file}" < "${bedfile}" > tags_counts.txt
 
