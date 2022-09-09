@@ -7,14 +7,14 @@ process split_region {
     input:
         val region
     output:
-        tuple val(region), path(bedfile)
+        tuple val(region), path("${bedfile}*")
 
     script:
-        bedfile = region + '.atomic.bed'
+        bedfile = region + '.atomic.bed.'
         region_bed = region.replaceAll('_', '\t')
         """
         echo "${region_bed}" > temp.bed
-        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" | head -n -1 > "${bedfile}"
+        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" | head -n -1 | split -l 500  
         """
 }
 
@@ -54,6 +54,6 @@ workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
         .map(it -> it.trim().replaceAll('\t', '_'))
     regions = split_region(input)
-    mp = regions | mpileup
+    mp = regions | flatMap | mpileup
     sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
