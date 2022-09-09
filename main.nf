@@ -54,8 +54,9 @@ workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
         .map(it -> it.trim().replaceAll('\t', '_'))
     regions = split_region(input)
+    regions.view()
     num_regions = regions.count()
     num_regions.view()
-    mp = regions | take(num_regions) | mpileup
+    mp = regions | mpileup
     sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
