@@ -19,6 +19,7 @@ process split_region {
 }
 
 process mpileup {
+    tag "${bedfile.simpleName}"
 
     input:
         path bedfile
