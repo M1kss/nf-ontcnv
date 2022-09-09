@@ -53,7 +53,6 @@ process sort {
 workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
         .map(it -> it.trim().replaceAll('\t', '_'))
-    regions = split_region(input)
-    mp = regions | flatMap | mpileup
+    mp = split_region(input) | flatten | mpileup
     sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
