@@ -14,7 +14,7 @@ process split_region {
         region_bed = region.replaceAll('_', '\t')
         """
         echo "${region_bed}" > temp.bed
-        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" > "${bedfile}"
+        bedops --chop "${params.slice_size}" temp.bed | bedops -n 1 - "${params.blacklist}" | head -n -1 > "${bedfile}"
         """
 }
 
@@ -54,9 +54,6 @@ workflow {
     input = Channel.fromPath(params.nanosv_regions).splitText()
         .map(it -> it.trim().replaceAll('\t', '_'))
     regions = split_region(input)
-    regions.view()
-    num_regions = regions.count()
-    num_regions.view()
     mp = regions | mpileup
     sort(mp.collectFile(name: 'counts_by_splits.tsv'))
 }
